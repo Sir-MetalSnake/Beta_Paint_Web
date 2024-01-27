@@ -1,0 +1,12 @@
+body{
+    background-color: #cecccc;
+}
+.whiteboard{
+    background-color: #ffffff;
+    width: 200vh;
+    height: 70vh;
+}
+.btnsquare{
+    width: 80px;
+    height: 80px;
+}
