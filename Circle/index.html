@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Paint</title>
+</head>
+<body>
+    <div class="paintcorp">
+        <div class="headpaint">
+            <div class="menu-figs">
+
+            </div>
+        </div>
+        <div class="sidepaint">
+            <div class="colors">
+                <span>Colores</span>
+                <div class="colors-sect">
+                    <button class="color black"></button>
+                    <button class="color red"></button>
+                    <button class="color yellow"></button>
+                    <button class="color green"></button>
+                    <button class="color grey"></button>
+                    <button class="color blue"></button>
+                </div>
+            </div>
+            <div class="Figure">
+                <span>Figuras</span>
+                <div class="Figure-sect">
+                    <button class="btn material-symbols-outlined">square</button>
+                    <button class="btn material-symbols-outlined" id="circle">circle</button>
+                    <button class="btn material-symbols-outlined">pen_size_2</button>
+                    <button class="btn material-symbols-outlined">edit</button>
+                </div>
+            </div>
+        </div>
+        <canvas id="canvas" class="whiteboard">
+        </canvas>
+    </div>
+    <script src="./js/main.js"></script>
+</body>
+</html>
