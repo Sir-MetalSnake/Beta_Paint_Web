@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
+*{
+    font-family: 'Sixtyfour', sans-serif;
+}
+body {
+    background-color: #b9b9b9;
+}
+
+.paintcorp {
+    background-color: rgb(97, 193, 219);
+    width: 90%;
+    margin: 40px auto;
+    border-radius: 10px;
+    height: 677px;
+    position: relative;
+}
+
+.headpaint {
+    background-color: #e9e7e7;
+    border: 2px solid black;
+    width: 100%;
+    z-index: 100;
+    position: absolute;
+}
+.btn{
+    width: 40px;
+    height: 40px;
+    align-items: center;
+}
+.btn img{
+
+}
+
+.sidepaint {
+    background-color: aliceblue;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    width: 30%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+
+}
+.colors{
+    display: flex;
+    flex-direction: column;
+}
+.Figure{
+    display: flex;
+    flex-direction: column;
+}
+.Figure span{
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 20px;
+    color: rgb(79, 236, 87);
+}
+.colors span{
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 20px;
+    color: rgb(79, 165, 236);
+}
+.colors-sect{
+    margin: 10px auto;
+    width: max-content;
+}
+.Figure-sect{
+    margin: 10px auto;
+}
+.color{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+}
+.black{
+    background-color: black;    
+}
+.red{
+    background-color: red;
+}
+.yellow{
+    background-color: yellow;
+}
+.green{
+    background-color: green;
+}
+.grey{
+    background-color: gray;
+}
+.blue{
+    background-color: blue;
+}
+.whiteboard {
+    position: absolute;
+    width: 67%;
+    right: 20px;
+    border-radius: 20px;
+    margin: 20px auto;
+    background-color: aliceblue;
+    height: 640px;
+}
