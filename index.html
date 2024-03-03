@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Paint</title>
+</head>
+<body>
+<div class="paintcorp">
+    <div class="headpaint">
+        <div class="menu-figs">
+
+        </div>
+    </div>
+    <div class="sidepaint">
+        <div class="colors">
+            <span>Colores</span>
+            <div class="colors-sect">
+                <button class="color black"></button>
+                <button class="color red"></button>
+                <button class="color yellow"></button>
+                <button class="color green"></button>
+                <button class="color grey"></button>
+                <button class="color blue"></button>
+            </div>
+        </div>
+        <div class="accordion">
+            <div class="accordion-content">
+                <header>
+                    <span class="title">Colores</span>
+                    <span class="material-symbols-outlined title">palette</span>
+                    <i class="material-symbols-outlined tab">arrow_drop_down</i>
+                </header>
+                <div class="description">
+                    <div class="colors-sect">
+                        <button class="color black"></button>
+                        <button class="color red"></button>
+                        <button class="color yellow"></button>
+                        <button class="color green"></button>
+                        <button class="color grey"></button>
+                        <button class="color blue"></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="Figure">
+            <span>Figuras</span>
+            <div class="Figure-sect">
+                <button class="btn material-symbols-outlined" id="square">square</button>
+                <button class="btn material-symbols-outlined" id="rect">rectangle</button>
+                <button class="btn material-symbols-outlined" id="circle">circle</button>
+                <button class="btn material-symbols-outlined" id="line">pen_size_2</button>
+                <button class="btn material-symbols-outlined" id="pencil">edit</button>
+                <button class="btn" id="oval"><img src="svg/wired-outline-1415-elipse.svg"/></button>
+                <button class="btn material-symbols-outlined" id="diamond">stat_0</button>
+                <button class="btn material-symbols-outlined" id="triangle">change_history</button>
+                <button class="btn material-symbols-outlined" id="pent">pentagon</button>
+                <button class="btn material-symbols-outlined" id="hex">hexagon</button>
+            </div>
+        </div>
+        <div class="tools">
+            <span>Tools</span>
+            <div class="tools_sect">
+                <button class="btn material-symbols-outlined" id="undo">arrow_back</button>
+                <button class="btn material-symbols-outlined" id="redo">arrow_forward</button>
+                <button class="btn material-symbols-outlined" id="move">open_with</button>
+                <button class="btn material-symbols-outlined" id="ratio">aspect_ratio</button>
+                <button class="btn material-symbols-outlined" id="rotate">rotate_90_degrees_cw</button>
+                <button class="btn material-symbols-outlined">ink_eraser</button>
+            </div>
+        </div>
+    </div>
+    <canvas id="canvas" class="whiteboard">
+    </canvas>
+</div>
+<script src="./js/main.js"></script>
+</body>
+</html>

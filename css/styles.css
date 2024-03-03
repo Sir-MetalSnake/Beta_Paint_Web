@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
+*{
+    font-family: 'Sixtyfour', sans-serif;
+    cursor: url('/img/no_magic.png'),auto;
+}
+body {
+
+}
+
+.paintcorp {
+    background-color: #051e0f;
+    width: 90%;
+    margin: 40px auto;
+    border-radius: 10px;
+    height: 677px;
+    position: relative;
+    box-shadow: 1px 1px 5px;
+}
+
+.headpaint {
+    background-color: #e9e7e7;
+    width: 100%;
+    z-index: 100;
+    position: absolute;
+}
+.btn{
+
+    width: 40px;
+    height: 40px;
+    align-items: center;
+}
+.btn:hover{
+
+}
+.btn img{
+
+}
+/*acordion*/
+.accordion{
+    text-align: left;
+    max-width: 100%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+}
+.accordion .accordion-content{
+    background-color: #fff;
+    box-shadow: 0 5px 10px #e5eff2;
+    border: 1px solid #e5eff2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.accordion-content header{
+    display: flex;
+    padding: 0 15px;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 50px;
+    border-bottom: 1px solid #e5eff2;
+}
+.accordion-content .description{
+    padding: 0 15px;
+    height: 0px;
+    transition: .5s ease-in;
+}
+.tab{
+    font-size: 100px;
+    transition: .5s ease-in;
+    rotate: 0deg;
+}
+/*acordion*/
+.sidepaint {
+    box-shadow: 1px 1px 10px;
+    background-color: #5f6765;
+    position: absolute;
+    height: 95%;
+    left: 5px;
+    top: 15px;
+    width: 30%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+
+}
+.grades{
+    color: black;
+    font-size: 20px;
+    position: absolute;
+    z-index: 1000;
+}
+.colors{
+    background-color: #7c7e7d;
+    border-radius: 10px;
+    width: 95%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 1px 5px;
+}
+.Figure{
+    padding: 15px;
+    background-color: #7c7e7d;
+    border-radius: 10px;
+    width: 85%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 1px 5px;
+}
+.tools{
+    padding: 15px;
+    background-color: #7c7e7d;
+    border-radius: 10px;
+    width: 85%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 1px 5px;
+}
+.tools_sect{
+    margin-top: 10px;
+    margin-left: 10px;
+    flex-wrap: wrap;
+    display: flex;
+    align-content: center;
+}
+.tools span{
+    margin-left: 20px;
+    font-size: 20px;
+    color: #d7d7d7;
+    text-shadow: 1px 1px 10px #313131;
+}
+.Figure span{
+    margin-left: 20px;
+    font-size: 20px;
+    color: #d7d7d7;
+    text-shadow: 1px 1px 10px #313131;
+}
+.colors span{
+    margin-top: 20px;
+    margin-left: 20px;
+    font-size: 20px;
+    color: #d7d7d7;
+    text-shadow: 1px 1px 10px #313131;
+}
+.colors-sect{
+    background-color: #d7d7d7;
+    border-radius: 10px;
+    margin: 0px auto;
+    width: max-content;
+}
+.Figure-sect{
+    margin-top: 10px;
+    margin-left: 10px;
+    flex-wrap: wrap;
+    display: flex;
+    align-content: center;
+}
+.Figure-sect .btn{
+    box-shadow: 1px 1px 2px;
+}
+.color{
+    box-shadow: 1px 1px 5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+}
+.black{
+    background-color: black;    
+}
+.red{
+    background-color: red;
+}
+.yellow{
+    background-color: yellow;
+}
+.green{
+    background-color: green;
+}
+.grey{
+    background-color: gray;
+}
+.blue{
+    background-color: blue;
+}
+.whiteboard {
+    position: absolute;
+    width: 67%;
+    right: 20px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 10px;
+    margin: 20px auto;
+    background-color: aliceblue;
+    height: 640px;
+    cursor: url("/img/magic.png"),auto;
+}
