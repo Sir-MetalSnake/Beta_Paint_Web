@@ -57,7 +57,10 @@ document.addEventListener('DOMContentLoaded',function(){
     });
     rotate.addEventListener('click',function () {
         modo='rotate';
-    })
+    });
+    diamond.addEventListener('click',function (){
+       modo='diamond';
+    });
     undo.addEventListener('click',function (){
         if (figure.length>0){
             back_store.push(figure.pop());
@@ -596,6 +599,11 @@ document.addEventListener('DOMContentLoaded',function(){
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
                     figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:6,angle:angle});
                     break;
+                case 'diamond':
+                    angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
+                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
+                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:4,angle:angle});
+                    break;
             }
         }else{
 
@@ -633,6 +641,9 @@ document.addEventListener('DOMContentLoaded',function(){
                     draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
                     break;
                 case 'hex':
+                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    break;
+                case 'diamond':
                     draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
                     break;
             }
@@ -678,6 +689,11 @@ document.addEventListener('DOMContentLoaded',function(){
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
                     draw_Polygon(radio,firstPointX,firstPointY,6,angle);
+                    break;
+                case 'diamond':
+                    angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
+                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
+                    draw_Polygon(radio,firstPointX,firstPointY,4,angle);
                     break;
             }
         }
