@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
 *{
     font-family: 'Sixtyfour', sans-serif;
-    cursor: url('/img/no_magic.png'),auto;
+    /*cursor: url('/img/no_magic.png'),auto;*/
 }
 body {
 
@@ -159,6 +159,9 @@ body {
     display: flex;
     align-content: center;
 }
+.icon{
+    font-size: 30px;
+}
 .Figure-sect .btn{
     box-shadow: 1px 1px 2px;
 }
@@ -168,6 +171,10 @@ body {
     height: 30px;
     border-radius: 50%;
     border: none;
+}
+.color:hover{
+    scale: 1.5;
+    transition: .2s ease-in;
 }
 .black{
     background-color: black;    
@@ -187,6 +194,14 @@ body {
 .blue{
     background-color: blue;
 }
+.txt{
+    z-index: 100000;
+    position: absolute;
+    opacity: 0;
+}
+.txt.active{
+    opacity: 1;
+}
 .whiteboard {
     position: absolute;
     width: 67%;
@@ -196,5 +211,5 @@ body {
     margin: 20px auto;
     background-color: aliceblue;
     height: 640px;
-    cursor: url("/img/magic.png"),auto;
+    /*cursor: url("/img/magic.png"),auto;*/
 }

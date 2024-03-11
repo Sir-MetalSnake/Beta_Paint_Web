@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Paint</title>
 </head>
 <body>
@@ -35,12 +36,12 @@
                 </header>
                 <div class="description">
                     <div class="colors-sect">
-                        <button class="color black"></button>
-                        <button class="color red"></button>
-                        <button class="color yellow"></button>
-                        <button class="color green"></button>
-                        <button class="color grey"></button>
-                        <button class="color blue"></button>
+                        <button class="color black" value="black"></button>
+                        <button class="color red" value="red"></button>
+                        <button class="color yellow" value="yellow"></button>
+                        <button class="color green" value="green"></button>
+                        <button class="color grey" value="grey"></button>
+                        <button class="color blue" value="blue"></button>
                     </div>
                 </div>
             </div>
@@ -52,16 +53,31 @@
                 </header>
                 <div class="description">
                     <div class="Figure-sect">
-                        <button class="btn material-symbols-outlined" id="square">square</button>
-                        <button class="btn material-symbols-outlined" id="rect">rectangle</button>
-                        <button class="btn material-symbols-outlined" id="circle">circle</button>
-                        <button class="btn material-symbols-outlined" id="line">pen_size_2</button>
-                        <button class="btn material-symbols-outlined" id="pencil">edit</button>
-                        <button class="btn" id="oval"><img src="svg/wired-outline-1415-elipse.svg"/></button>
-                        <button class="btn material-symbols-outlined" id="diamond">stat_0</button>
-                        <button class="btn material-symbols-outlined" id="triangle">change_history</button>
-                        <button class="btn material-symbols-outlined" id="pent">pentagon</button>
-                        <button class="btn material-symbols-outlined" id="hex">hexagon</button>
+                        <button class="fig btn material-symbols-outlined" value="square">square</button>
+                        <button class="fig btn material-symbols-outlined" value="rectangle">rectangle</button>
+                        <button class="fig btn material-symbols-outlined" value="circle">circle</button>
+                        <button class="fig btn material-symbols-outlined" value="line">pen_size_2</button>
+                        <button class="fig btn material-symbols-outlined" value="pencil">edit</button>
+                        <button class="fig btn" value="oval"><img src="svg/wired-outline-1415-elipse.svg"/></button>
+                        <button class="fig btn material-symbols-outlined" value="diamond">stat_0</button>
+                        <button class="fig btn material-symbols-outlined" value="triangle">change_history</button>
+                        <button class="fig btn material-symbols-outlined" value="pent">pentagon</button>
+                        <button class="fig btn material-symbols-outlined" value="hex">hexagon</button>
+                        <button class="fig btn material-symbols-outlined" value="text">T</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-content">
+                <header>
+                    <span class="title">Save as:</span>
+                    <span class="material-symbols-outlined title">image</span>
+                    <i class="material-symbols-outlined tab">arrow_drop_down</i>
+                </header>
+                <div class="description">
+                    <div class="Figure-sect">
+                        <button class="btn bx bxs-file-jpg icon" id="toJPG"></button>
+                        <button class="btn bx bxs-file-png icon" id="toPNG"></button>
+                        <button class="btn material-symbols-outlined" id="toGIF">gif</button>
                     </div>
                 </div>
             </div>
@@ -92,7 +108,16 @@
                 <button class="btn material-symbols-outlined">ink_eraser</button>
             </div>
         </div>
+        <div class="tools">
+            <span>Options</span>
+            <div class="tools_sect">
+                <span>Size: </span>
+                <input type="range" min="1" max="100" id="range" value="1">
+                <span id="data">1</span>
+            </div>
+        </div>
     </div>
+    <textarea class="txt" id="txt_area"></textarea>
     <canvas id="canvas" class="whiteboard">
     </canvas>
 </div>

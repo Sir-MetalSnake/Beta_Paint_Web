@@ -3,20 +3,15 @@ document.addEventListener('DOMContentLoaded',function(){
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     const paper = canvas.getContext("2d");
-    const circle = document.getElementById("circle");
-    const line = document.getElementById("line");
-    const pencil = document.getElementById("pencil");
     const undo = document.getElementById('undo');
-    const oval = document.getElementById('oval');
     const redo = document.getElementById('redo');
-    const pent = document.getElementById('pent');
-    const hex = document.getElementById('hex');
-    const squar = document.getElementById('square');
-    const rect = document.getElementById('rect');
     const move = document.getElementById('move');
     const scale = document.getElementById('ratio');
     const rotate = document.getElementById('rotate');
-    const diamond = document.getElementById('diamond');
+    const toPNG = document.getElementById('toPNG');
+    const toJPG = document.getElementById('toJPG');
+    const Colors = document.querySelectorAll('.color');
+    const Figrs = document.querySelectorAll('.fig');
     var figure=[];
     var back_store =[];
     var isDrawing = false;
@@ -27,27 +22,23 @@ document.addEventListener('DOMContentLoaded',function(){
     var finalPointX = 0;
     var finalPointY = 0; 
     var modo = 'pencil';
+    var Color_line = null;
     let current_index=null;
-    circle.addEventListener('click',function(e) {
-        modo='circle';
-    })
-    line.addEventListener('click',function (e){
-       modo='line';
+    Colors.forEach((button)=>{
+        button.addEventListener('click',function (ev) {
+            Color_line=button.value;
+        })
     });
-    pencil.addEventListener('click',function (e){
-       modo='pencil'
+    Figrs.forEach((button)=>{
+       button.addEventListener('click',function (){
+           modo=button.value;
+       })
     });
-    oval.addEventListener("click", function (){
-        modo='oval';
-    });
-    pent.addEventListener('click',function (){
-        modo='pent';
-    });
-    hex.addEventListener('click',function (){
-        modo='hex';
-    });
-    squar.addEventListener('click',function (){
-        modo ='square';
+    //Rango de tamaño
+    const  range = document.getElementById('range');
+    const dat = document.getElementById('data');
+    range.addEventListener('change',function () {
+       dat.textContent = range.value;
     });
     move.addEventListener('click',function () {
         modo='move';
@@ -58,23 +49,33 @@ document.addEventListener('DOMContentLoaded',function(){
     rotate.addEventListener('click',function () {
         modo='rotate';
     });
-    diamond.addEventListener('click',function (){
-       modo='diamond';
-    });
     undo.addEventListener('click',function (){
         if (figure.length>0){
             back_store.push(figure.pop());
             drawFigure();
         }
     })
+    toPNG.addEventListener('click',function (){
+       const  a = document.createElement('a');
+       const dataURI= canvas.toDataURL();
+       document.body.appendChild(a);
+       a.href = dataURI;
+       a.download = "canvas-image.png";
+       a.click();
+    });
+    toJPG.addEventListener('click',function (){
+        const  a = document.createElement('a');
+        const dataURI= canvas.toDataURL();
+        document.body.appendChild(a);
+        a.href = dataURI;
+        a.download = "canvas-image.jpg";
+        a.click();
+    });
     redo.addEventListener('click',function (){
         if (back_store.length>0){
             figure.push(back_store.pop());
             drawFigure();
         }
-    })
-    rect.addEventListener('click',function () {
-        modo='rectangle';
     })
     function EllipsePoint(xc,yc,x,y){
         paper.fillRect(xc+x,yc+y,5,5);
@@ -192,6 +193,11 @@ document.addEventListener('DOMContentLoaded',function(){
                 angle = Math.atan2(Figure.finalPointY - startY,Figure.finalPointX-startX);
                 if (distance <= Figure.radius) {
                      return true;
+                }
+                break;
+            case 'text':
+                if (startY===Figure.firstPointY){
+                    return true;
                 }
                 break;
             case 'pencil':
@@ -333,20 +339,18 @@ document.addEventListener('DOMContentLoaded',function(){
         }
     }
     canvas.addEventListener('mousemove',function(e){
+        var pos = getPos(canvas,e);
         if (isRotate){
-            var pos = getPos(canvas,e);
             let current_fig= figure[current_index];
             rotateFig(current_fig,pos);
             drawFigure();
         }
         if (isScale){
-            var pos = getPos(canvas,e);
             let current_fig= figure[current_index];
             Scale(current_fig,pos);
             drawFigure();
         }
         if(isMove){
-            var pos = getPos(canvas,e);
             let current_fig= figure[current_index];
             let dx = pos.x - firstPointX;
             let dy = pos.y - firstPointY;
@@ -604,12 +608,26 @@ document.addEventListener('DOMContentLoaded',function(){
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
                     figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:4,angle:angle});
                     break;
+                case 'triangle':
+                    angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
+                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
+                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:3,angle:angle});
+                    break;
             }
         }else{
 
             drawFigure();
         }
     });
+    // function AddText() {
+    //     document.addEventListener('keydown',function (e){
+    //         if (e.keyCode===13){
+    //         }else {
+    //
+    //         }
+    //     });
+    // }
+    const textarea = document.getElementById('txt_area');
     function drawFigure(){
         paper.clearRect(0,0,canvas.width,canvas.height);
         for(var i=0;i<figure.length;i++){
@@ -645,6 +663,12 @@ document.addEventListener('DOMContentLoaded',function(){
                     break;
                 case 'diamond':
                     draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    break;
+                case 'triangle':
+                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    break;
+                case 'text':
+                    drawtext(fig.text_value,fig.firstPointX,fig.firstPointY);
                     break;
             }
         }
@@ -695,9 +719,46 @@ document.addEventListener('DOMContentLoaded',function(){
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
                     draw_Polygon(radio,firstPointX,firstPointY,4,angle);
                     break;
+                case 'triangle':
+                    angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
+                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
+                    draw_Polygon(radio,firstPointX,firstPointY,3,angle);
+                    break;
             }
         }
         paper.closePath();
+    }
+    let hasInput = false;
+    canvas.addEventListener('click',function (e) {
+        if (modo==='text'){
+            if (hasInput){return}
+            addInput(firstPointX,firstPointY,e);
+        }else {return}
+    })
+    function addInput(x, y,ev) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.style.position = 'absolute';
+        input.style.left = ev.pageX + 'px';
+        input.style.top = ev.pageY + 'px';
+        input.onkeydown = handleEnter;
+        document.body.appendChild(input);
+        input.focus();
+        hasInput = true;
+    }
+    function handleEnter(e) {
+        const keyCode = e.keyCode;
+        if (keyCode === 13) {
+            drawtext(this.value, firstPointX, firstPointY);
+            figure.push({type:'text',firstPointX:firstPointX,firstPointY:firstPointY,text_value:this.value});
+            document.body.removeChild(this);
+            hasInput = false;
+        }
+    }
+    function drawtext(txt,x, y) {
+        paper.font = '25px Arial';
+        paper.fillText(txt, x, y);
+        textarea.style.display='none';
     }
     function getPos(canvas,event){
         var rect = canvas.getBoundingClientRect();
