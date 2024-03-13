@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded',function(){
     var firstPointX = 0;
     var firstPointY = 0;
     var finalPointX = 0;
-    var finalPointY = 0; 
+    var finalPointY = 0;
     var modo = 'pencil';
     var Color_line = null;
     let current_index=null;
@@ -71,6 +71,23 @@ document.addEventListener('DOMContentLoaded',function(){
         a.download = "canvas-image.jpg";
         a.click();
     });
+    const toPDF = document.getElementById('toPDF');
+    toPDF.addEventListener('click',function () {
+        genPDF();
+    })
+    function genPDF() {
+        var doc = new jsPDF({
+            orientation: "landscape",
+            unit: 'mm',
+            format: [canvas.clientWidth,canvas.clientHeight]
+        });
+        const dataURI= canvas.toDataURL({
+            type:'png',
+            quality:1
+        });
+        doc.addImage(dataURI,"PNG",0,0);
+        doc.save("Midocumento.pdf")
+    }
     redo.addEventListener('click',function (){
         if (back_store.length>0){
             figure.push(back_store.pop());
@@ -558,7 +575,7 @@ document.addEventListener('DOMContentLoaded',function(){
             isMove=false;
         }
         if(isDrawing){
-            let OrientX,OrientY,angle,radio;
+            let OrientX,OrientY,angle,radio,width,height;
             isDrawing=false;
             switch (modo){
                 case "pencil":
@@ -577,8 +594,8 @@ document.addEventListener('DOMContentLoaded',function(){
                     OrientY:OrientY,angle:0});
                     break;
                 case 'rectangle':
-                    let width = Math.abs(finalPointX-firstPointX);
-                    let height = Math.abs(finalPointY-firstPointY);
+                    width = Math.abs(finalPointX-firstPointX);
+                    height = Math.abs(finalPointY-firstPointY);
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
                     figure.push({type:'rectangle',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,width_rect:width,height_rect:height,
@@ -604,9 +621,13 @@ document.addEventListener('DOMContentLoaded',function(){
                     figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:6,angle:angle});
                     break;
                 case 'diamond':
-                    angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
-                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:4,angle:angle});
+                    width = Math.abs(finalPointX-firstPointX);
+                    figure.push({type:'diamond',firstPointX:firstPointX,firstPointY:firstPointY,width_rhombus:width, angle:0});
+                    break;
+                case 'trapezoid':
+                    width = Math.abs(finalPointX-firstPointX);
+                    height= Math.abs(finalPointY-firstPointY);
+                    figure.push({type:'trapezoid',firstPointX:firstPointX,firstPointY:firstPointY,topWidth:width/2,bottomWidth:width,heightTrapezoid:height,angle:0});
                     break;
                 case 'triangle':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
@@ -627,6 +648,46 @@ document.addEventListener('DOMContentLoaded',function(){
     //         }
     //     });
     // }
+    function draw_Rhombus(x0,y0,length,angle) {
+        var halfDiagonal = length;
+        var xOffset = halfDiagonal * Math.cos(Math.PI / 4);
+        var yOffset = halfDiagonal * Math.sin(Math.PI / 4);
+
+        var rotatedX0Y0 = rotatePoint(x0, y0 - halfDiagonal, x0, y0, angle);
+        var rotatedX1Y1 = rotatePoint(x0 + xOffset, y0, x0, y0, angle);
+        var rotatedX2Y2 = rotatePoint(x0, y0 + halfDiagonal, x0, y0, angle);
+        var rotatedX3Y3 = rotatePoint(x0 - xOffset, y0, x0, y0, angle);
+
+        DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y);
+        DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y);
+        DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y);
+        DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y);
+    }
+    function drawTrapezoid(x, y, topWidth, bottomWidth, height, angle) {
+        var halfHeight = height;
+        var halfTopWidth = topWidth;
+        var halfBottomWidth = bottomWidth;
+
+        // Calcular las coordenadas de los vértices del trapecio en base al ángulo de inclinación
+        var topLeftX = x - halfTopWidth;
+        var topLeftY = y - halfHeight;
+        var topRightX = x + halfTopWidth;
+        var topRightY = y - halfHeight;
+        var bottomRightX = x + halfBottomWidth;
+        var bottomRightY = y + halfHeight;
+        var bottomLeftX = x - halfBottomWidth;
+        var bottomLeftY = y + halfHeight;
+
+        var rotatedTopLeft = rotatePoint(topLeftX, topLeftY, x, y, angle);
+        var rotatedTopRight = rotatePoint(topRightX, topRightY, x, y, angle);
+        var rotatedBottomRight = rotatePoint(bottomRightX, bottomRightY, x, y, angle);
+        var rotatedBottomLeft = rotatePoint(bottomLeftX, bottomLeftY, x, y, angle);
+
+        DDA(rotatedTopLeft.x,rotatedTopLeft.y,rotatedTopRight.x, rotatedTopRight.y);
+        DDA(rotatedTopRight.x, rotatedTopRight.y,rotatedBottomRight.x, rotatedBottomRight.y);
+        DDA(rotatedBottomRight.x, rotatedBottomRight.y,rotatedBottomLeft.x, rotatedBottomLeft.y);
+        DDA(rotatedBottomLeft.x, rotatedBottomLeft.y,rotatedTopLeft.x,rotatedTopLeft.y)
+    }
     const textarea = document.getElementById('txt_area');
     function drawFigure(){
         paper.clearRect(0,0,canvas.width,canvas.height);
@@ -662,10 +723,13 @@ document.addEventListener('DOMContentLoaded',function(){
                     draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
                     break;
                 case 'diamond':
-                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    draw_Rhombus(fig.firstPointX,fig.firstPointY,fig.width_rhombus,fig.angle);
                     break;
                 case 'triangle':
                     draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    break;
+                case 'trapezoid':
+                    drawTrapezoid(fig.firstPointX,fig.firstPointY,fig.topWidth,fig.bottomWidth,fig.heightTrapezoid,fig.angle);
                     break;
                 case 'text':
                     drawtext(fig.text_value,fig.firstPointX,fig.firstPointY);
@@ -673,7 +737,7 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         }
         if (isDrawing){
-            let radio=0,angle=0,OrientX,OrientY;
+            let radio=0,angle=0,OrientX,OrientY,width,height;
             switch (modo){
                 case "pencil":
                     break;
@@ -695,8 +759,8 @@ document.addEventListener('DOMContentLoaded',function(){
                     square(firstPointX,firstPointY,length,OrientX,OrientY);
                     break;
                 case 'rectangle':
-                    let width = Math.abs(finalPointX-firstPointX);
-                    let height = Math.abs(finalPointY-firstPointY);
+                    width = Math.abs(finalPointX-firstPointX);
+                    height = Math.abs(finalPointY-firstPointY);
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
                     Rectangle(firstPointX,firstPointY,finalPointX,finalPointY,width,height,OrientX,OrientY);
@@ -715,9 +779,14 @@ document.addEventListener('DOMContentLoaded',function(){
                     draw_Polygon(radio,firstPointX,firstPointY,6,angle);
                     break;
                 case 'diamond':
+                    width = Math.abs(finalPointX-firstPointX);
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
-                    radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    draw_Polygon(radio,firstPointX,firstPointY,4,angle);
+                    draw_Rhombus(firstPointX,firstPointY,width,0);
+                    break;
+                case 'trapezoid':
+                    width = Math.abs(finalPointX-firstPointX);
+                    height= Math.abs(finalPointY-firstPointY);
+                    drawTrapezoid(firstPointX,firstPointY,width/2,width,height,0)
                     break;
                 case 'triangle':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
