@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded',function(){
     var isDrawing = false;
     var isScale = false;
     var isRotate = false;
+    var isEraser = false;
     var firstPointX = 0;
     var firstPointY = 0;
     var finalPointX = 0;
@@ -77,11 +78,15 @@ document.addEventListener('DOMContentLoaded',function(){
     const  range = document.getElementById('range');
     const dat = document.getElementById('data');
     const eraser = document.getElementById('eraser');
+    const eraser_pix = document.getElementById('eraser_pix');
     range.addEventListener('change',function () {
        dat.textContent = range.value;
     });
     eraser.addEventListener('click',function () {
-        
+        modo='eraser';
+    })
+    eraser_pix.addEventListener('click',function () {
+        modo='eraser_pix';
     })
     move.addEventListener('click',function () {
         modo='move';
@@ -314,8 +319,101 @@ document.addEventListener('DOMContentLoaded',function(){
         return false;
     }
     let isMove=false;
+    canvas.addEventListener('touchstart',function () {
+        var position = getPos(canvas,e);
+        if (modo==='eraser_pix'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    isEraser=true;
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='eraser'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    figure.splice(index,1);
+                    drawFigure();
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='rotate'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    isRotate=true;
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='scale'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    isScale=true;
+                    firstPointX = position.x;
+                    firstPointY = position.y;
+                    console.log('entra');
+                    return;
+                }else{
+                    console.log('no entra')}
+                index++;
+            }
+        }
+        if (modo==='move'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    isMove=true;
+                    firstPointX = position.x;
+                    firstPointY = position.y;
+                    console.log('entra');
+                    return;
+                }else{
+                    console.log('no entra')}
+                index++;
+            }
+        }
+        isDrawing = true;
+        firstPointX = position.x;
+        firstPointY = position.y;
+    })
     canvas.addEventListener('mousedown',function(e){
         var position = getPos(canvas,e);
+        if (modo==='eraser_pix'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    isEraser=true;
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='eraser'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    current_index = index;
+                    figure.splice(index,1);
+                    drawFigure();
+                    return;
+                }
+                index++;
+            }
+        }
         if (modo==='rotate'){
             let index = 0;
             for (let fig of figure){
@@ -407,6 +505,11 @@ document.addEventListener('DOMContentLoaded',function(){
                 curr_fig.topWidth = curr_fig.bottomWidth/2;
                 curr_fig.heightTrapezoid= Math.abs(pos.y-curr_fig.firstPointY);
                 break;
+            case 'diamond':
+                curr_fig.width_rhombus = Math.abs(pos.x-firstPointX);
+                curr_fig.height_rhombus= Math.abs(pos.y-firstPointY);
+                break;
+
         }
     }
     function rotateFig(curr_fig,pos) {
@@ -448,11 +551,38 @@ document.addEventListener('DOMContentLoaded',function(){
                 angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
                 curr_fig.angle = angle;
                 break
+            case 'diamond':
+                angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
+                curr_fig.angle = angle;
         }
     }
+    function borrarFiguraPorPixeles(figuraABorrar) {
+        // for (let i = 0; i < figuraABorrar.length; i++) {
+        //         // Obtener las coordenadas de los píxeles de la figura a borrar
+        //         // let coordenadasPixeles = figuraABorrar.obtenerCoordenadasPixeles();
+        //         //
+        //         // // Borrar los píxeles de la figura en el lienzo
+        //         // for (let j = 0; j < coordenadasPixeles.length; j++) {
+        //         //     let coordenada = coordenadasPixeles[j];
+        //         //     borrarPixel(coordenada.x, coordenada.y); // Suponiendo que tienes una función para borrar un píxel
+        //         // }
+        //
+        //         // Eliminar la figura del vector
+        //         figuraABorrar.splice(i, 3);
+        //         break;
+        // }
 
-    canvas.addEventListener('mousemove',function(e){
+    }
+    let erasePoints=[];
+    function MoveEvent() {
         var pos = getPos(canvas,e);
+        if (isEraser){
+            let current_fig= figure[current_index];
+            //borrarFiguraPorPixeles(current_fig);
+            erasePoints.push({x:pos.x,y:pos.y});
+            paper.clearRect(pos.x,pos.y,4,4);
+
+        }
         if (isRotate){
             let current_fig= figure[current_index];
             rotateFig(current_fig,pos);
@@ -474,12 +604,6 @@ document.addEventListener('DOMContentLoaded',function(){
             drawFigure();
             firstPointX = pos.x;
             firstPointY = pos.y;
-            switch (current_fig.type) {
-                case 'trapezoid':
-                    current_fig.TrapezoidPoints = TrapezoidPoints;
-                    TrapezoidPoints=null;
-                    break
-            }
         }
         if(!isDrawing)return;
         if (isDrawing){
@@ -492,6 +616,12 @@ document.addEventListener('DOMContentLoaded',function(){
                 drawFigure();
             }
         }
+    }
+    canvas.addEventListener('touchmove',function () {
+        MoveEvent();
+    })
+    canvas.addEventListener('mousemove',function(e){
+        MoveEvent();
     });
     function Pencil(x,y){
         paper.beginPath();
@@ -665,7 +795,11 @@ document.addEventListener('DOMContentLoaded',function(){
         }
         DDA(lastX,lastY,Math.round(centerX + radio * Math.cos(angle)),Math.round(centerY + radio * Math.sin(angle)))
     }
-    canvas.addEventListener('mouseup',function (e){
+    function UPevent(){
+        if (isEraser){
+            isEraser=false;
+            figure.push({type:'action',subtype:'erase',erasePoints:erasePoints});
+        }
         if (isRotate){
             isRotate=false;
         }
@@ -692,7 +826,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
                     figure.push({type:'square',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,len:length,OrientX:OrientX,
-                    OrientY:OrientY,angle:0});
+                        OrientY:OrientY,angle:0});
                     break;
                 case 'rectangle':
                     width = Math.abs(finalPointX-firstPointX);
@@ -739,8 +873,14 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         }else{
 
-            drawFigure();
+            //drawFigure();
         }
+    }
+    canvas.addEventListener('touchend',function (){
+        UPevent();
+    })
+    canvas.addEventListener('mouseup',function (e){
+        UPevent();
     });
     // function AddText() {
     //     document.addEventListener('keydown',function (e){
@@ -800,6 +940,14 @@ document.addEventListener('DOMContentLoaded',function(){
             let fig = figure[i];
             paper.beginPath();
             switch (fig.type) {
+                case'action':
+                    if (fig.subtype==='erase'){
+                        for (let point of fig.erasePoints) {
+                            // Dibuja el punto en el lienzo
+                            paper.clearRect(point.x, point.y, 4, 4); // Dibuja un píxel en la posición del punto
+                        }
+                    }
+                    break
                 case 'pencil':
                     paper.putImageData(fig.imag,0,0);
                     break;
