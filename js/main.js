@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded',function(){
     const toJPG = document.getElementById('toJPG');
     const Colors = document.querySelectorAll('.color');
     const Figrs = document.querySelectorAll('.fig');
+    const save = document.getElementById('Save');
+    const open = document.getElementById('openfile');
+    const restart = document.getElementById('restart');
     var figure=[];
     var back_store =[];
     var isDrawing = false;
@@ -24,22 +27,62 @@ document.addEventListener('DOMContentLoaded',function(){
     var modo = 'pencil';
     var Color_line = null;
     let current_index=null;
+    let json =[];
     Colors.forEach((button)=>{
         button.addEventListener('click',function (ev) {
             Color_line=button.value;
         })
     });
+    open.addEventListener('click',function () {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.onchange = function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                figure = JSON.parse(event.target.result);
+
+                drawFigure();
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    })
     Figrs.forEach((button)=>{
        button.addEventListener('click',function (){
            modo=button.value;
        })
     });
+    restart.addEventListener('click',function () {
+        paper.clearRect(0, 0, canvas.width, canvas.height);
+        figure=[];
+        back_store=[];
+    })
+    save.addEventListener('click',function () {
+        json=JSON.stringify(figure);
+        console.log(json)
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'figuras.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
     //Rango de tamaño
     const  range = document.getElementById('range');
     const dat = document.getElementById('data');
+    const eraser = document.getElementById('eraser');
     range.addEventListener('change',function () {
        dat.textContent = range.value;
     });
+    eraser.addEventListener('click',function () {
+        
+    })
     move.addEventListener('click',function () {
         modo='move';
     });
@@ -94,60 +137,101 @@ document.addEventListener('DOMContentLoaded',function(){
             drawFigure();
         }
     })
-    function EllipsePoint(xc,yc,x,y){
-        paper.fillRect(xc+x,yc+y,5,5);
-        paper.fillRect(xc-x,yc+y,5,5);
-        paper.fillRect(xc+x,yc-y,5,5);
-        paper.fillRect(xc-x,yc-y,5,5);
+    // function EllipsePoint(xc,yc,x,y,angle){
+    //     paper.fillRect(xc+x,yc+y,5,5);
+    //     paper.fillRect(xc-x,yc+y,5,5);
+    //     paper.fillRect(xc+x,yc-y,5,5);
+    //     paper.fillRect(xc-x,yc-y,5,5);
+    // }
+    // function DrawEllipse(xc,yc,a,b,angle)
+    // {
+    //     var dx, dy, d1, d2, x, y;
+    //     x = 0;
+    //     y = b;
+    //     let a_mul =a * a
+    //     let b_mul =b * b
+    //     // Initial decision parameter of region 1
+    //     d1 = Math.round(b_mul - a_mul * b + 0.25 * a_mul);
+    //     dx = 2 * b_mul * x;
+    //     dy = 2 * a_mul * y;
+    //     // For region 1
+    //     while (dx < dy)
+    //     {
+    //         EllipsePoint(xc,yc,x,y,angle);
+    //         x++;
+    //         dx += 2 * b_mul;
+    //         if (d1 < 0)
+    //         {
+    //             d1 += dx + b_mul;
+    //         }
+    //         else
+    //         {
+    //             y--;
+    //             dy = dy - (2 * a_mul);
+    //             d1 = d1 + dx - dy + b_mul;
+    //         }
+    //     }
+    //     d2 = (b_mul * (x + 0.5) * (x + 0.5) + a_mul * (y - 1) * (y - 1) - a_mul * b_mul);
+    //     while (y >= 0)
+    //     {
+    //         EllipsePoint(xc,yc,x,y,angle);
+    //         y--;
+    //         dy -= 2 * a_mul;
+    //         if (d2 > 0)
+    //         {
+    //             d2 += a_mul - dy;
+    //         }
+    //         else
+    //         {
+    //             x++;
+    //             dx += 2 * b_mul;
+    //             d2 += dx - dy + a_mul;
+    //         }
+    //     }
+    // }
+    function DrawEllipse(xc, yc, a, b, angle) {
+        for (let theta = 0; theta < 2 * Math.PI; theta += 0.01) {
+            const x = xc + a * Math.cos(theta) * Math.cos(angle) - b * Math.sin(theta) * Math.sin(angle);
+            const y = yc + a * Math.cos(theta) * Math.sin(angle) + b * Math.sin(theta) * Math.cos(angle);
+            paper.fillRect(x, y, 2, 2);
+        }
     }
-    function DrawEllipse(xc,yc,a,b)
-    {
-        var dx, dy, d1, d2, x, y;
-        x = 0;
-        y = b;
-        let a_mul =a * a
-        let b_mul =b * b
-        // Initial decision parameter of region 1
-        d1 = Math.round(b_mul - a_mul * b + 0.25 * a_mul);
-        dx = 2 * b_mul * x;
-        dy = 2 * a_mul * y;
-        // For region 1
-        while (dx < dy)
-        {
-            EllipsePoint(xc,yc,x,y);
-            x++;
-            dx += 2 * b_mul;
-            if (d1 < 0)
-            {
-                d1 += dx + b_mul;
-            }
-            else
-            {
-                y--;
-                dy = dy - (2 * a_mul);
-                d1 = d1 + dx - dy + b_mul;
-            }
+    function is_in_trapezoid(mouseX,mouseY,Figure) {
+        var halfHeight = Figure.heightTrapezoid;
+        var halfTopWidth = Figure.topWidth;
+        var halfBottomWidth = Figure.bottomWidth;
+
+        // Calcular las coordenadas de los vértices del trapecio en base al ángulo de inclinación
+        var topLeftX = Figure.firstPointX - halfTopWidth;
+        var topLeftY = Figure.firstPointY - halfHeight;
+        var topRightX = Figure.firstPointX + halfTopWidth;
+        var topRightY = Figure.firstPointY - halfHeight;
+        var bottomRightX = Figure.firstPointX + halfBottomWidth;
+        var bottomRightY = Figure.firstPointY + halfHeight;
+        var bottomLeftX = Figure.firstPointX - halfBottomWidth;
+        var bottomLeftY = Figure.firstPointY + halfHeight;
+
+        var rotatedTopLeft = rotatePoint(topLeftX, topLeftY, Figure.firstPointX, Figure.firstPointY, Figure.angle);
+        var rotatedTopRight = rotatePoint(topRightX, topRightY, Figure.firstPointX, Figure.firstPointY, Figure.angle);
+        var rotatedBottomRight = rotatePoint(bottomRightX, bottomRightY, Figure.firstPointX, Figure.firstPointY, Figure.angle);
+        var rotatedBottomLeft = rotatePoint(bottomLeftX, bottomLeftY, Figure.firstPointX, Figure.firstPointY, Figure.angle);
+
+        var trapezoidPolygon = [rotatedTopLeft, rotatedTopRight, rotatedBottomRight, rotatedBottomLeft];
+
+        var inside = false;
+        for (var i = 0, j = trapezoidPolygon.length - 1; i < trapezoidPolygon.length; j = i++) {
+            var xi = trapezoidPolygon[i].x, yi = trapezoidPolygon[i].y;
+            var xj = trapezoidPolygon[j].x, yj = trapezoidPolygon[j].y;
+
+            var intersect = ((yi > mouseY) !== (yj > mouseY)) &&
+                (mouseX < (xj - xi) * (mouseY - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
         }
-        d2 = (b_mul * (x + 0.5) * (x + 0.5) + a_mul * (y - 1) * (y - 1) - a_mul * b_mul);
-        while (y >= 0)
-        {
-            EllipsePoint(xc,yc,x,y);
-            y--;
-            dy -= 2 * a_mul;
-            if (d2 > 0)
-            {
-                d2 += a_mul - dy;
-            }
-            else
-            {
-                x++;
-                dx += 2 * b_mul;
-                d2 += dx - dy + a_mul;
-            }
-        }
+
+        return inside;
     }
     function is_mouse_in_figure(startX,startY,Figure){
-        let x1,y1,x2,y2,numerator,denominator,distance,angle;
+        let x1,y1,x2,y2,numerator,denominator,distance,angle,width;
         switch (Figure.type) {
             case 'line':
                 x1 = Figure.firstPointX;
@@ -161,11 +245,18 @@ document.addEventListener('DOMContentLoaded',function(){
 
                 const epsilon = 2; // Tamaño del área alrededor de la línea para considerar como "dentro"
                 if (distance <= epsilon) {
-                    console.log('entra');
                     return true;
                 }
-                console.log('no entra');
                 break;
+            case 'diamond':
+                const halfWidth = Figure.width_rhombus;
+                distance=Math.sqrt(Math.pow(startX-Figure.firstPointX,2)+Math.pow(startY-Figure.firstPointY,2));
+                if (distance < halfWidth/2) {
+                    return true;
+                }
+                break;
+            case 'trapezoid':
+                return is_in_trapezoid(startX,startY,Figure);
             case 'square':
                 let lengthX = Math.abs(Figure.finalPointX-Figure.firstPointX);
                 let lengthY = Math.abs(Figure.finalPointY-Figure.firstPointY);
@@ -181,7 +272,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 }
                 break;
             case'rectangle':
-                let width = Math.abs(Figure.finalPointX-Figure.firstPointX);
+                width = Math.abs(Figure.finalPointX-Figure.firstPointX);
                 let height = Math.abs(Figure.finalPointY-Figure.firstPointY);
                 if ((startX>=Figure.firstPointX && startX<=Figure.firstPointX+width*Figure.OrientX)&&(startY>=Figure.firstPointY && startY<=Figure.firstPointY+height*Figure.OrientY)){
                     return true;
@@ -271,7 +362,7 @@ document.addEventListener('DOMContentLoaded',function(){
         firstPointY = position.y;
     });
     function Scale(curr_fig,pos) {
-        let OrientX,OrientY,radio;
+        let OrientX,OrientY,radio,width,height;
         switch (curr_fig.type) {
             case 'square':
                 let lengthX = Math.abs(pos.x-curr_fig.firstPointX);
@@ -311,6 +402,11 @@ document.addEventListener('DOMContentLoaded',function(){
                 radio = Math.sqrt(Math.pow(pos.x-curr_fig.firstPointX,2)+Math.pow(pos.y-curr_fig.firstPointY,2));
                 curr_fig.radius = radio;
                 break;
+            case 'trapezoid':
+                curr_fig.bottomWidth = Math.abs(pos.x-curr_fig.firstPointX);
+                curr_fig.topWidth = curr_fig.bottomWidth/2;
+                curr_fig.heightTrapezoid= Math.abs(pos.y-curr_fig.firstPointY);
+                break;
         }
     }
     function rotateFig(curr_fig,pos) {
@@ -333,13 +429,8 @@ document.addEventListener('DOMContentLoaded',function(){
                 curr_fig.radius = radio;
                 break;
             case 'oval':
-                dx = pos.x - curr_fig.firstPointX;
-                dy = pos.y - curr_fig.firstPointY;
-                angle = Math.atan2(dy, dx);
-                let newA = Math.sqrt(dx * dx + dy * dy);
-                let newB = curr_fig.b;
-                curr_fig.a = newA;
-                curr_fig.b = newB;
+                angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
+                curr_fig.angle = angle;
                 break;
             case 'rectangle':
                 angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
@@ -353,8 +444,13 @@ document.addEventListener('DOMContentLoaded',function(){
                 angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
                 curr_fig.angle = angle;
                 break;
+            case 'trapezoid':
+                angle=Math.atan2(pos.y - curr_fig.firstPointY, pos.x - curr_fig.firstPointX);
+                curr_fig.angle = angle;
+                break
         }
     }
+
     canvas.addEventListener('mousemove',function(e){
         var pos = getPos(canvas,e);
         if (isRotate){
@@ -378,7 +474,12 @@ document.addEventListener('DOMContentLoaded',function(){
             drawFigure();
             firstPointX = pos.x;
             firstPointY = pos.y;
-
+            switch (current_fig.type) {
+                case 'trapezoid':
+                    current_fig.TrapezoidPoints = TrapezoidPoints;
+                    TrapezoidPoints=null;
+                    break
+            }
         }
         if(!isDrawing)return;
         if (isDrawing){
@@ -608,7 +709,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 case 'oval':
                     var a = Math.abs(finalPointX-firstPointX);
                     var b = Math.abs(finalPointY-firstPointY);
-                    figure.push({type:'oval',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,a:a,b:b});
+                    figure.push({type:'oval',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,a:a,b:b,angle:0});
                     break;
                 case 'pent':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
@@ -622,12 +723,13 @@ document.addEventListener('DOMContentLoaded',function(){
                     break;
                 case 'diamond':
                     width = Math.abs(finalPointX-firstPointX);
-                    figure.push({type:'diamond',firstPointX:firstPointX,firstPointY:firstPointY,width_rhombus:width, angle:0});
+                    height= Math.abs(finalPointY-firstPointY);
+                    figure.push({type:'diamond',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,width_rhombus:width,height_rhombus:height, angle:0});
                     break;
                 case 'trapezoid':
                     width = Math.abs(finalPointX-firstPointX);
                     height= Math.abs(finalPointY-firstPointY);
-                    figure.push({type:'trapezoid',firstPointX:firstPointX,firstPointY:firstPointY,topWidth:width/2,bottomWidth:width,heightTrapezoid:height,angle:0});
+                    figure.push({type:'trapezoid',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,topWidth:width/2,bottomWidth:width,heightTrapezoid:height,angle:0});
                     break;
                 case 'triangle':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
@@ -648,6 +750,10 @@ document.addEventListener('DOMContentLoaded',function(){
     //         }
     //     });
     // }
+    let TrapezoidPoints;
+    function SetTrapezoidPoints(point0,point1,point2,point3) {
+        return TrapezoidPoints={x0:point0.x,y0:point0.y,x1:point1.x,y1:point1.y,x2:point2.x,y2:point2.y,x3:point3.x,y3:point3.y};
+    }
     function draw_Rhombus(x0,y0,length,angle) {
         var halfDiagonal = length;
         var xOffset = halfDiagonal * Math.cos(Math.PI / 4);
@@ -657,7 +763,6 @@ document.addEventListener('DOMContentLoaded',function(){
         var rotatedX1Y1 = rotatePoint(x0 + xOffset, y0, x0, y0, angle);
         var rotatedX2Y2 = rotatePoint(x0, y0 + halfDiagonal, x0, y0, angle);
         var rotatedX3Y3 = rotatePoint(x0 - xOffset, y0, x0, y0, angle);
-
         DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y);
         DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y);
         DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y);
@@ -711,7 +816,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     Rectangle(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY,fig.width_rect,fig.height_rect,fig.OrientX,fig.OrientY,fig.angle);
                     break;
                 case 'oval':
-                    DrawEllipse(fig.firstPointX,fig.firstPointY,fig.a,fig.b);
+                    DrawEllipse(fig.firstPointX,fig.firstPointY,fig.a,fig.b,fig.angle);
                     break;
                 case 'line':
                     DDA(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY);
@@ -748,7 +853,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 case 'oval':
                     var a = Math.abs(finalPointX-firstPointX);
                     var b = Math.abs(finalPointY-firstPointY);
-                    DrawEllipse(firstPointX,firstPointY,a,b);
+                    DrawEllipse(firstPointX,firstPointY,a,b,0);
                     break;
                 case 'square':
                     let lengthX = Math.abs(finalPointX-firstPointX);

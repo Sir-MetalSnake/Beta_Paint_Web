@@ -4,11 +4,14 @@
     /*cursor: url('/img/no_magic.png'),auto;*/
 }
 body {
-
+    background-image: url("/img/Fondo2.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
 }
 
 .paintcorp {
-    background-color: #051e0f;
+    background-color: rgba(255, 255, 255, 0.35);
     width: 90%;
     margin: 40px auto;
     border-radius: 10px;
@@ -24,7 +27,7 @@ body {
     position: absolute;
 }
 .btn{
-
+    padding: 2px;
     width: 40px;
     height: 40px;
     align-items: center;
@@ -121,8 +124,7 @@ body {
     box-shadow: 1px 1px 5px;
 }
 .tools_sect{
-    margin-top: 10px;
-    margin-left: 10px;
+    padding: 10px;
     flex-wrap: wrap;
     display: flex;
     align-content: center;
@@ -212,4 +214,12 @@ body {
     background-color: aliceblue;
     height: 640px;
     /*cursor: url("/img/magic.png"),auto;*/
+}
+/*ButtonOpen*/
+.buttonOpen{
+    padding: 10px;
+    width: 80%;
+    margin: 0 auto;
+    border-radius: 5px;
+    font-size: 30px;
 }

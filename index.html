@@ -63,7 +63,7 @@
                         <button class="fig btn material-symbols-outlined" value="triangle">change_history</button>
                         <button class="fig btn material-symbols-outlined" value="pent">pentagon</button>
                         <button class="fig btn material-symbols-outlined" value="hex">hexagon</button>
-                        <button class="fig btn" value="trapezoid"></button>
+                        <button class="fig btn" value="trapezoid"><img src="img/trapezoid.png" width="32" height="32"/></button>
                         <button class="fig btn material-symbols-outlined" value="text">T</button>
                     </div>
                 </div>
@@ -80,6 +80,25 @@
                         <button class="btn bx bxs-file-png icon" id="toPNG"></button>
                         <button class="btn material-symbols-outlined" id="toGIF">gif</button>
                         <button class='btn bx bxs-file-pdf icon' id="toPDF" ></button>
+                        <button class='btn material-symbols-outlined' id="Save" >save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-content">
+                <header>
+                    <span class="title">Tools</span>
+                    <span class="material-symbols-outlined title">build</span>
+                    <i class="material-symbols-outlined tab">arrow_drop_down</i>
+                </header>
+                <div class="description">
+                    <div class="tools_sect">
+                        <button class="btn material-symbols-outlined" id="undo">arrow_back</button>
+                        <button class="btn material-symbols-outlined" id="redo">arrow_forward</button>
+                        <button class="btn material-symbols-outlined" id="move">open_with</button>
+                        <button class="btn material-symbols-outlined" id="ratio">aspect_ratio</button>
+                        <button class="btn material-symbols-outlined" id="rotate">rotate_90_degrees_cw</button>
+                        <button class="btn material-symbols-outlined" id="eraser">ink_eraser</button>
+                        <button class="btn material-symbols-outlined" id="restart">restart_alt</button>
                     </div>
                 </div>
             </div>
@@ -99,17 +118,17 @@
 <!--                <button class="btn material-symbols-outlined" id="hex">hexagon</button>-->
 <!--            </div>-->
 <!--        </div>-->
-        <div class="tools">
-            <span>Tools</span>
-            <div class="tools_sect">
-                <button class="btn material-symbols-outlined" id="undo">arrow_back</button>
-                <button class="btn material-symbols-outlined" id="redo">arrow_forward</button>
-                <button class="btn material-symbols-outlined" id="move">open_with</button>
-                <button class="btn material-symbols-outlined" id="ratio">aspect_ratio</button>
-                <button class="btn material-symbols-outlined" id="rotate">rotate_90_degrees_cw</button>
-                <button class="btn material-symbols-outlined">ink_eraser</button>
-            </div>
-        </div>
+<!--        <div class="tools">-->
+<!--            <span>Tools</span>-->
+<!--            <div class="tools_sect">-->
+<!--                <button class="btn material-symbols-outlined" id="undo">arrow_back</button>-->
+<!--                <button class="btn material-symbols-outlined" id="redo">arrow_forward</button>-->
+<!--                <button class="btn material-symbols-outlined" id="move">open_with</button>-->
+<!--                <button class="btn material-symbols-outlined" id="ratio">aspect_ratio</button>-->
+<!--                <button class="btn material-symbols-outlined" id="rotate">rotate_90_degrees_cw</button>-->
+<!--                <button class="btn material-symbols-outlined">ink_eraser</button>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="tools">
             <span>Options</span>
             <div class="tools_sect">
@@ -118,6 +137,7 @@
                 <span id="data">1</span>
             </div>
         </div>
+        <button class="buttonOpen" id="openfile">Open File</button>
     </div>
     <textarea class="txt" id="txt_area"></textarea>
     <canvas id="canvas" class="whiteboard">
