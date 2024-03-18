@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     }
     let erasePoints=[];
-    function MoveEvent(e) {
+    canvas.addEventListener('touchmove',function () {
         var pos = getPos(canvas,e);
         if (isEraser){
             let current_fig= figure[current_index];
@@ -617,12 +617,49 @@ document.addEventListener('DOMContentLoaded',function(){
                 drawFigure();
             }
         }
-    }
-    canvas.addEventListener('touchmove',function () {
-        MoveEvent();
     })
     canvas.addEventListener('mousemove',function(e){
-        MoveEvent();
+        var pos = getPos(canvas,e);
+        if (isEraser){
+            let current_fig= figure[current_index];
+            //borrarFiguraPorPixeles(current_fig);
+            erasePoints.push({x:pos.x,y:pos.y});
+            paper.clearRect(pos.x,pos.y,4,4);
+
+        }
+        if (isRotate){
+            let current_fig= figure[current_index];
+            rotateFig(current_fig,pos);
+            drawFigure();
+        }
+        if (isScale){
+            let current_fig= figure[current_index];
+            Scale(current_fig,pos);
+            drawFigure();
+        }
+        if(isMove){
+            let current_fig= figure[current_index];
+            let dx = pos.x - firstPointX;
+            let dy = pos.y - firstPointY;
+            current_fig.firstPointX += dx;
+            current_fig.firstPointY += dy;
+            current_fig.finalPointX += dx;
+            current_fig.finalPointY += dy;
+            drawFigure();
+            firstPointX = pos.x;
+            firstPointY = pos.y;
+        }
+        if(!isDrawing)return;
+        if (isDrawing){
+            var position = getPos(canvas,e);
+            finalPointX = position.x;
+            finalPointY = position.y;
+            if(modo==='pencil'){
+                Pencil(finalPointX,finalPointY);
+            }else{
+                drawFigure();
+            }
+        }
     });
     function Pencil(x,y){
         paper.beginPath();
