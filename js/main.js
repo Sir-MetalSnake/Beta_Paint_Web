@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded',function(){
         }
         if(!isDrawing)return;
         if (isDrawing){
-            var position = getPos(canvas,e);
+            var position = getPos(canvas, touch);
             finalPointX = position.x;
             finalPointY = position.y;
             if(modo==='pencil'){
