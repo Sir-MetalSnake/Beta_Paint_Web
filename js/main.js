@@ -1109,7 +1109,7 @@ document.addEventListener('DOMContentLoaded',function(){
         hasInput = true;
     }
     function handleEnter(e) {
-        const keyCode = e.keyCode;
+        const keyCode = e.keyCode||e.which;
         if (keyCode === 13) {
             drawtext(this.value, firstPointX, firstPointY);
             figure.push({type:'text',firstPointX:firstPointX,firstPointY:firstPointY,text_value:this.value});
