@@ -576,7 +576,9 @@ document.addEventListener('DOMContentLoaded',function(){
     }
     let erasePoints=[];
     canvas.addEventListener('touchmove',function (e) {
-        var pos = getPos(canvas,e);
+        e.preventDefault();
+        var touch = e.touches[0];
+        var pos = getPos(canvas, touch);
         if (isEraser){
             let current_fig= figure[current_index];
             //borrarFiguraPorPixeles(current_fig);
