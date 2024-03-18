@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     }
     let erasePoints=[];
-    canvas.addEventListener('touchmove',function () {
+    canvas.addEventListener('touchmove',function (e) {
         var pos = getPos(canvas,e);
         if (isEraser){
             let current_fig= figure[current_index];
