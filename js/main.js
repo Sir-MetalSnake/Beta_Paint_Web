@@ -319,8 +319,9 @@ document.addEventListener('DOMContentLoaded',function(){
         return false;
     }
     let isMove=false;
-    canvas.addEventListener('touchstart',function () {
-        var position = getPos(canvas,e);
+    canvas.addEventListener('touchstart',function (e) {
+        var touch = e.touches[0];
+        var position = getPos(canvas,touch);
         if (modo==='eraser_pix'){
             let index = 0;
             for (let fig of figure){
