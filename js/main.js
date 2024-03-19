@@ -876,7 +876,7 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     function square(x0, y0, length, OrientX, OrientY, angle,color,size) {
-        if (arguments.length===6){
+        if (angle!==0){
             var x = x0 - length / 2;
             var y = y0 - length / 2;
             var x1 = x0 + length / 2;
@@ -924,7 +924,7 @@ document.addEventListener('DOMContentLoaded',function(){
         })
     })
     function Rectangle(x0,y0,x1,y1,width,height,OrientX,OrientY,angle,size,color){
-        if (arguments.length===9){
+        if (angle!==0){
             var x = x0 - width / 2;
             var y = y0 - height / 2;
             var x1_1 = x0 + width / 2;
@@ -1247,6 +1247,7 @@ document.addEventListener('DOMContentLoaded',function(){
     }
     function handleEnter(e) {
         const keyCode = e.keyCode;
+        console.log(keyCode);
         if (keyCode === 13) {
             drawtext(this.value, firstPointX, firstPointY);
             figure.push({type:'text',firstPointX:firstPointX,firstPointY:firstPointY,text_value:this.value});
@@ -1257,7 +1258,6 @@ document.addEventListener('DOMContentLoaded',function(){
     function drawtext(txt,x, y) {
         paper.font = '25px Arial';
         paper.fillText(txt, x, y);
-        textarea.style.display='none';
     }
     function getPos(canvas,event){
         var rect = canvas.getBoundingClientRect();
