@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Angkor&display=swap');
 *{
-    font-family: 'Sixtyfour', sans-serif;
+    font-family: "Angkor", serif;
     /*cursor: url('/img/no_magic.png'),auto;*/
 }
 body {
@@ -21,29 +21,30 @@ body {
 }
 
 .headpaint {
-    box-shadow: 1px 1px 10px;
-    background-color: #5f6765;
+    padding: 5px;
+    box-shadow: 0 1px 3px #e5eff2;
+    border: 1px solid #d9f3f6;
+    background-color: #fff;
     position: absolute;
-    height: 95%;
+    height: 93%;
     right: 5px;
     top: 15px;
-    width: 0%;
+    width: 7%;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
 
-}
-.headpaint.active{
-    width: 5%;
 }
 .btn{
     padding: 2px;
     width: 40px;
     height: 40px;
     align-items: center;
+    transition: .5s;
 }
 .btn:hover{
-
+    rotate: 20grad;
+    scale: 1.5;
 }
 .btn img{
 
@@ -104,6 +105,26 @@ body {
     position: absolute;
     z-index: 1000;
 }
+.color{
+    margin-left: 10px;
+}
+.picker{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    width: 45px;
+    height: 45px;
+    border: none;
+}
+.picker::-webkit-color-swatch{
+    border-radius: 50%;
+    border: none;
+}
+.picker::-moz-color-swatch{
+    border-radius: 50%;
+    border: none;
+}
 .colors{
     background-color: #7c7e7d;
     border-radius: 10px;
@@ -160,9 +181,8 @@ body {
 }
 .colors-sect{
     padding: 10px;
-    background-color: #d7d7d7;
+    align-content: space-between;
     border-radius: 10px;
-    margin: 0px auto;
     width: max-content;
 }
 .Figure-sect{
@@ -178,7 +198,6 @@ body {
     box-shadow: 1px 1px 2px;
 }
 .color{
-    box-shadow: 1px 1px 5px;
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -216,8 +235,8 @@ body {
 }
 .whiteboard {
     position: absolute;
-    width: 67%;
-    right: 20px;
+    width: 60%;
+    right: 120px;
     border-radius: 10px;
     box-shadow: 1px 1px 10px;
     margin: 20px auto;

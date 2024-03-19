@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded',function(){
     const save = document.getElementById('Save');
     const open = document.getElementById('openfile');
     const restart = document.getElementById('restart');
+    const layer = document.querySelectorAll('.post');
+    const menu = document.querySelectorAll('.menu-figuras');
     var figure=[];
     var back_store =[];
     var isDrawing = false;
@@ -26,13 +28,22 @@ document.addEventListener('DOMContentLoaded',function(){
     var finalPointX = 0;
     var finalPointY = 0;
     var modo = 'pencil';
-    var Color_line = null;
+    var Color_line = 'black';
     let current_index=null;
     let json =[];
+    const picker = document.getElementById('picker');
     Colors.forEach((button)=>{
         button.addEventListener('click',function (ev) {
             Color_line=button.value;
         })
+    });
+    picker.addEventListener('change',function () {
+        Color_line = picker.value;
+    })
+    layer.forEach((button)=>{
+       button.addEventListener('click',function () {
+           modo = button.value;
+       })
     });
     open.addEventListener('click',function () {
         const input = document.createElement("input");
@@ -49,6 +60,15 @@ document.addEventListener('DOMContentLoaded',function(){
             reader.readAsText(file);
         };
         input.click();
+    })
+    menu.forEach((value)=>{
+        value.addEventListener('onload',function () {
+            for (let fig of figure){
+                let h3= document.createElement('h3');
+                document.body.appendChild(h3);
+                h3.textContent = 'hi';
+            }
+        });
     })
     Figrs.forEach((button)=>{
        button.addEventListener('click',function (){
@@ -73,7 +93,7 @@ document.addEventListener('DOMContentLoaded',function(){
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
-
+    let sinsel_size=5;
     //Rango de tamaño
     const  range = document.getElementById('range');
     const dat = document.getElementById('data');
@@ -81,6 +101,7 @@ document.addEventListener('DOMContentLoaded',function(){
     const eraser_pix = document.getElementById('eraser_pix');
     range.addEventListener('change',function () {
        dat.textContent = range.value;
+       sinsel_size=range.value;
     });
     eraser.addEventListener('click',function () {
         modo='eraser';
@@ -123,6 +144,7 @@ document.addEventListener('DOMContentLoaded',function(){
     toPDF.addEventListener('click',function () {
         genPDF();
     })
+
     function genPDF() {
         var doc = new jsPDF({
             orientation: "landscape",
@@ -194,11 +216,12 @@ document.addEventListener('DOMContentLoaded',function(){
     //         }
     //     }
     // }
-    function DrawEllipse(xc, yc, a, b, angle) {
+    function DrawEllipse(xc, yc, a, b, angle,size,color) {
         for (let theta = 0; theta < 2 * Math.PI; theta += 0.01) {
             const x = xc + a * Math.cos(theta) * Math.cos(angle) - b * Math.sin(theta) * Math.sin(angle);
             const y = yc + a * Math.cos(theta) * Math.sin(angle) + b * Math.sin(theta) * Math.cos(angle);
-            paper.fillRect(x, y, 2, 2);
+            paper.fillStyle=color
+            paper.fillRect(x, y, size, size);
         }
     }
     function is_in_trapezoid(mouseX,mouseY,Figure) {
@@ -319,6 +342,54 @@ document.addEventListener('DOMContentLoaded',function(){
         return false;
     }
     let isMove=false;
+    function moverHaciaAtras(curfig) {
+        // Verificar si el botón de mover hacia atrás está activado
+
+        console.log(curfig);
+        const index = figure.indexOf(curfig);
+        if (index > 0) {
+            // Intercambiar la posición de la figura seleccionada con la anterior
+            [figure[index], figure[index - 1]] = [figure[index - 1], figure[index]];
+            // Redibujar todas las figuras en el nuevo orden
+            drawFigure();
+        }
+
+    }
+    function moverHaciaAdelante(currfig) {
+        const index = figure.indexOf(currfig);
+        if (index < figure.length - 1) {
+            // Guardar la figura que está adelante de la figura seleccionada
+            const figuraSiguiente = figure[index + 1];
+            // Colocar la figura siguiente en la posición actual de la figura seleccionada
+            figure[index + 1] = currfig;
+            // Colocar la figura seleccionada en la posición siguiente
+            figure[index] = figuraSiguiente;
+            // Redibujar todas las figuras en el nuevo orden
+            drawFigure()
+        }
+    }
+    function moverAlFondo(currfig) {
+        const index = figure.indexOf(currfig);
+        if (index > 0) {
+            // Eliminar la figura seleccionada de su posición actual
+            figure.splice(index, 1);
+            // Insertar la figura al inicio de la lista
+            figure.unshift(currfig);
+            // Redibujar todas las figuras en el nuevo orden
+            drawFigure()
+        }
+    }
+    function moverAlFrente(currfig) {
+        const index = figure.indexOf(currfig);
+        if (index < figure.length - 1) {
+            // Eliminar la figura seleccionada de su posición actual
+            figure.splice(index, 1);
+            // Insertar la figura al final de la lista
+            figure.push(currfig);
+            // Redibujar todas las figuras en el nuevo orden
+            drawFigure();
+        }
+    }
     canvas.addEventListener('touchstart',function (e) {
         var touch = e.touches[0];
         var position = getPos(canvas,touch);
@@ -392,6 +463,50 @@ document.addEventListener('DOMContentLoaded',function(){
     })
     canvas.addEventListener('mousedown',function(e){
         var position = getPos(canvas,e);
+        if (modo==='atras'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverHaciaAtras(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='adelante'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverHaciaAdelante(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='fondo'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverAlFondo(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='frente'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverAlFrente(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
         if (modo==='eraser_pix'){
             let index = 0;
             for (let fig of figure){
@@ -657,18 +772,20 @@ document.addEventListener('DOMContentLoaded',function(){
             finalPointX = position.x;
             finalPointY = position.y;
             if(modo==='pencil'){
-                Pencil(finalPointX,finalPointY);
+                Pencil(finalPointX,finalPointY,sinsel_size,Color_line);
             }else{
                 drawFigure();
             }
         }
     });
-    function Pencil(x,y){
+    let pointsPencil=[]
+    function Pencil(x,y,size,color){
         paper.beginPath();
-        paper.strokeStyle = 'black';
-        paper.lineWidth = 5;
+        paper.strokeStyle = color;
+        paper.lineWidth = size;
         paper.lineCap = 'round';
         paper.moveTo(firstPointX,firstPointY);
+        pointsPencil.push({x:x,y:y});
         paper.lineTo(x,y);
         paper.lineJoin = 'round';
         paper.closePath();
@@ -676,24 +793,43 @@ document.addEventListener('DOMContentLoaded',function(){
         firstPointX = x;
         firstPointY = y;
     }
-
-    function drawcircle(xc,yc,x,y){
-        paper.fillRect(xc+x,yc+y,5,5);
-        paper.fillRect(xc-x,yc+y,5,5);
-        paper.fillRect(xc+x,yc-y,5,5);
-        paper.fillRect(xc-x,yc-y,5,5);
-        paper.fillRect(xc+y,yc+x,5,5);
-        paper.fillRect(xc-y,yc+x,5,5);
-        paper.fillRect(xc+y,yc-x,5,5);
-        paper.fillRect(xc-y,yc-x,5,5);
+    function redrawpoints(handDrawnPoints,size,color){
+        let index=0;
+        for (let point of handDrawnPoints.points){
+            if (index === 0) {
+                console.log(point.x,point.y);
+                // Si es el primer punto, lo movemos a esa posición
+                paper.moveTo(point.x, point.y);
+            } else {
+                // Para los puntos siguientes, dibujamos una línea desde el punto anterior hasta este
+                paper.lineTo(point.x, point.y);
+                console.log(point.x,point.y);
+            }
+            index++;
+        }
+        // Establecemos el estilo de línea y la dibujamos
+        paper.lineWidth = size; // Grosor de la línea
+        paper.strokeStyle = color; // Color de la línea
+        paper.stroke();
     }
-    function circleBres(xc, yc, r) 
+    function drawcircle(xc,yc,x,y,size,color){
+        paper.fillStyle = color;
+        paper.fillRect(xc+x,yc+y,size,size);
+        paper.fillRect(xc-x,yc+y,size,size);
+        paper.fillRect(xc+x,yc-y,size,size);
+        paper.fillRect(xc-x,yc-y,size,size);
+        paper.fillRect(xc+y,yc+x,size,size);
+        paper.fillRect(xc-y,yc+x,size,size);
+        paper.fillRect(xc+y,yc-x,size,size);
+        paper.fillRect(xc-y,yc-x,size,size);
+    }
+    function circleBres(xc, yc, r,size,color)
     { 
         let x = 0, y = r; 
         let d = 3 - 2 * r;
         while (y >= x)
         {
-            drawcircle(xc, yc, x, y);
+            drawcircle(xc, yc, x, y,size,color);
             x++; 
             if (d > 0) 
             { 
@@ -705,7 +841,7 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         }
     }
-    function DDA(x0,y0,x1,y1){
+    function DDA(x0,y0,x1,y1,size,color){
         var dx,dy,incx,incy,x,y,p;
         dx = x1-x0;
         dy = y1-y0;
@@ -719,7 +855,8 @@ document.addEventListener('DOMContentLoaded',function(){
         x=x0;
         y=y0;
         for (var i =0; i<=p; i++){
-            paper.fillRect(x,y,5,5);
+            paper.fillStyle = color;
+            paper.fillRect(x,y,size,size);
             x+=incx;
             y+=incy;
         }
@@ -738,7 +875,7 @@ document.addEventListener('DOMContentLoaded',function(){
         return { x: newX, y: newY };
     }
 
-    function square(x0, y0, length, OrientX, OrientY, angle) {
+    function square(x0, y0, length, OrientX, OrientY, angle,color,size) {
         if (arguments.length===6){
             var x = x0 - length / 2;
             var y = y0 - length / 2;
@@ -756,18 +893,18 @@ document.addEventListener('DOMContentLoaded',function(){
             var rotatedX3Y3 = rotatePoint(x3, y3, x0, y0, angle);
 
             // Dibujar las líneas que conectan los vértices rotados para formar el cuadrado
-            DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y);
-            DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y);
-            DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y);
-            DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y);
+            DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y,size,color);
+            DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y,size,color);
+            DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y,size,color);
+            DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y,size,color);
         }
         else {
             let x1= x0+length*OrientX;
             let y1= y0+length*OrientY;
-            DDA(x0,y0,x1,y0);
-            DDA(x1,y0,x1,y1);
-            DDA(x1,y1,x0,y1);
-            DDA(x0,y1,x0,y0);
+            DDA(x0,y0,x1,y0,size,color);
+            DDA(x1,y0,x1,y1,size,color);
+            DDA(x1,y1,x0,y1,size,color);
+            DDA(x0,y1,x0,y0,size,color);
         }
     }
     const acordion_content = document.querySelectorAll('.accordion-content');
@@ -786,7 +923,7 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         })
     })
-    function Rectangle(x0,y0,x1,y1,width,height,OrientX,OrientY,angle){
+    function Rectangle(x0,y0,x1,y1,width,height,OrientX,OrientY,angle,size,color){
         if (arguments.length===9){
             var x = x0 - width / 2;
             var y = y0 - height / 2;
@@ -804,17 +941,17 @@ document.addEventListener('DOMContentLoaded',function(){
             var rotatedX3Y3 = rotatePoint(x3, y3, x0, y0, angle);
 
             // Dibujar las líneas que conectan los vértices rotados para formar el cuadrado
-            DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y);
-            DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y);
-            DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y);
-            DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y);
+            DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y,size,color);
+            DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y,size,color);
+            DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y,size,color);
+            DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y,size,color);
         }else{
             let x = x0+width*OrientX;
             let y= y0+height*OrientY;
-            DDA(x0,y0,x,y0);
-            DDA(x,y0,x,y);
-            DDA(x,y,x0,y);
-            DDA(x0,y,x0,y0);
+            DDA(x0,y0,x,y0,size,color);
+            DDA(x,y0,x,y,size,color);
+            DDA(x,y,x0,y,size,color);
+            DDA(x0,y,x0,y0,size,color);
         }
     }
     function grade_to_points(CenterX,CenterY,radio,angle){
@@ -822,18 +959,18 @@ document.addEventListener('DOMContentLoaded',function(){
         let pointY= Math.round(CenterY+radio*Math.sin(angle));
         return{x:pointX,y:pointY}
     }
-    function draw_Polygon(radio,centerX,centerY,Sides,angle){
+    function draw_Polygon(radio,centerX,centerY,Sides,angle,size,color){
         var initialAngle = (2*Math.PI)/Sides,lastX=0,lastY=0;
         for (let i = 0; i < Sides;i++) {
             let step = i*initialAngle+angle;
             let points= grade_to_points(centerX,centerY,radio,step);
             if(i>0){
-                DDA(lastX,lastY,points.x,points.y);
+                DDA(lastX,lastY,points.x,points.y,size,color);
             }
             lastX = points.x;
             lastY = points.y;
         }
-        DDA(lastX,lastY,Math.round(centerX + radio * Math.cos(angle)),Math.round(centerY + radio * Math.sin(angle)))
+        DDA(lastX,lastY,Math.round(centerX + radio * Math.cos(angle)),Math.round(centerY + radio * Math.sin(angle)),size,color)
     }
     function UPevent(){
         if (isEraser){
@@ -854,10 +991,12 @@ document.addEventListener('DOMContentLoaded',function(){
             isDrawing=false;
             switch (modo){
                 case "pencil":
-                    figure.push({type:'pencil',imag:paper.getImageData(0,0,canvas.width,canvas.height)});
+                    figure.push({type:'pencil',points:pointsPencil,sinsel_size:sinsel_size,color:Color_line});
+                    pointsPencil=[];
+                    console.log(figure);
                     break;
                 case "line":
-                    figure.push({type:'line',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY});
+                    figure.push({type:'line',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,sinsel_size:sinsel_size,color:Color_line});
                     break;
                 case "square":
                     let lengthX = Math.abs(finalPointX-firstPointX);
@@ -866,7 +1005,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
                     figure.push({type:'square',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,len:length,OrientX:OrientX,
-                        OrientY:OrientY,angle:0});
+                        OrientY:OrientY,angle:0,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'rectangle':
                     width = Math.abs(finalPointX-firstPointX);
@@ -874,41 +1013,41 @@ document.addEventListener('DOMContentLoaded',function(){
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
                     figure.push({type:'rectangle',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,width_rect:width,height_rect:height,
-                        OrientX:OrientX,OrientY:OrientY,angle:0});
+                        OrientX:OrientX,OrientY:OrientY,angle:0,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case "circle":
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    figure.push({type:'circle',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio});
+                    figure.push({type:'circle',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'oval':
                     var a = Math.abs(finalPointX-firstPointX);
                     var b = Math.abs(finalPointY-firstPointY);
-                    figure.push({type:'oval',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,a:a,b:b,angle:0});
+                    figure.push({type:'oval',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,a:a,b:b,angle:0,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'pent':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    figure.push({type:'pent',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:5,angle:angle});
+                    figure.push({type:'pent',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:5,angle:angle,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'hex':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:6,angle:angle});
+                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:6,angle:angle,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'diamond':
                     width = Math.abs(finalPointX-firstPointX);
                     height= Math.abs(finalPointY-firstPointY);
-                    figure.push({type:'diamond',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,width_rhombus:width,height_rhombus:height, angle:0});
+                    figure.push({type:'diamond',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,width_rhombus:width,height_rhombus:height, angle:0,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'trapezoid':
                     width = Math.abs(finalPointX-firstPointX);
                     height= Math.abs(finalPointY-firstPointY);
-                    figure.push({type:'trapezoid',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,topWidth:width/2,bottomWidth:width,heightTrapezoid:height,angle:0});
+                    figure.push({type:'trapezoid',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,topWidth:width/2,bottomWidth:width,heightTrapezoid:height,angle:0,sinsel_size:sinsel_size,color: Color_line});
                     break;
                 case 'triangle':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:3,angle:angle});
+                    figure.push({type:'hex',firstPointX:firstPointX,firstPointY:firstPointY,finalPointX:finalPointX,finalPointY:finalPointY,radius:radio,sides:3,angle:angle,sinsel_size:sinsel_size,color: Color_line});
                     break;
             }
         }else{
@@ -934,7 +1073,7 @@ document.addEventListener('DOMContentLoaded',function(){
     function SetTrapezoidPoints(point0,point1,point2,point3) {
         return TrapezoidPoints={x0:point0.x,y0:point0.y,x1:point1.x,y1:point1.y,x2:point2.x,y2:point2.y,x3:point3.x,y3:point3.y};
     }
-    function draw_Rhombus(x0,y0,length,angle) {
+    function draw_Rhombus(x0,y0,length,angle,size,color) {
         var halfDiagonal = length;
         var xOffset = halfDiagonal * Math.cos(Math.PI / 4);
         var yOffset = halfDiagonal * Math.sin(Math.PI / 4);
@@ -943,12 +1082,12 @@ document.addEventListener('DOMContentLoaded',function(){
         var rotatedX1Y1 = rotatePoint(x0 + xOffset, y0, x0, y0, angle);
         var rotatedX2Y2 = rotatePoint(x0, y0 + halfDiagonal, x0, y0, angle);
         var rotatedX3Y3 = rotatePoint(x0 - xOffset, y0, x0, y0, angle);
-        DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y);
-        DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y);
-        DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y);
-        DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y);
+        DDA(rotatedX0Y0.x, rotatedX0Y0.y, rotatedX1Y1.x, rotatedX1Y1.y,size,color);
+        DDA(rotatedX1Y1.x, rotatedX1Y1.y, rotatedX2Y2.x, rotatedX2Y2.y,size,color);
+        DDA(rotatedX2Y2.x, rotatedX2Y2.y, rotatedX3Y3.x, rotatedX3Y3.y,size,color);
+        DDA(rotatedX3Y3.x, rotatedX3Y3.y, rotatedX0Y0.x, rotatedX0Y0.y,size,color);
     }
-    function drawTrapezoid(x, y, topWidth, bottomWidth, height, angle) {
+    function drawTrapezoid(x, y, topWidth, bottomWidth, height, angle,size,color) {
         var halfHeight = height;
         var halfTopWidth = topWidth;
         var halfBottomWidth = bottomWidth;
@@ -968,10 +1107,10 @@ document.addEventListener('DOMContentLoaded',function(){
         var rotatedBottomRight = rotatePoint(bottomRightX, bottomRightY, x, y, angle);
         var rotatedBottomLeft = rotatePoint(bottomLeftX, bottomLeftY, x, y, angle);
 
-        DDA(rotatedTopLeft.x,rotatedTopLeft.y,rotatedTopRight.x, rotatedTopRight.y);
-        DDA(rotatedTopRight.x, rotatedTopRight.y,rotatedBottomRight.x, rotatedBottomRight.y);
-        DDA(rotatedBottomRight.x, rotatedBottomRight.y,rotatedBottomLeft.x, rotatedBottomLeft.y);
-        DDA(rotatedBottomLeft.x, rotatedBottomLeft.y,rotatedTopLeft.x,rotatedTopLeft.y)
+        DDA(rotatedTopLeft.x,rotatedTopLeft.y,rotatedTopRight.x, rotatedTopRight.y,size,color);
+        DDA(rotatedTopRight.x, rotatedTopRight.y,rotatedBottomRight.x, rotatedBottomRight.y,size,color);
+        DDA(rotatedBottomRight.x, rotatedBottomRight.y,rotatedBottomLeft.x, rotatedBottomLeft.y,size,color);
+        DDA(rotatedBottomLeft.x, rotatedBottomLeft.y,rotatedTopLeft.x,rotatedTopLeft.y,size,color)
     }
     const textarea = document.getElementById('txt_area');
     function drawFigure(){
@@ -989,40 +1128,40 @@ document.addEventListener('DOMContentLoaded',function(){
                     }
                     break
                 case 'pencil':
-                    paper.putImageData(fig.imag,0,0);
+                    redrawpoints(fig,fig.sinsel_size,fig.color)
                     break;
                 case 'circle':
                     let h,k;
                     h=fig.firstPointX
                     k=fig.firstPointY
-                    circleBres(h,k,fig.radius);
+                    circleBres(h,k,fig.radius,fig.sinsel_size,fig.color);
                     break;
                 case 'square':
-                    square(fig.firstPointX,fig.firstPointY,fig.len, fig.OrientX,fig.OrientY,fig.angle);
+                    square(fig.firstPointX,fig.firstPointY,fig.len, fig.OrientX,fig.OrientY,fig.angle,fig.color,fig.sinsel_size);
                     break;
                 case 'rectangle':
-                    Rectangle(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY,fig.width_rect,fig.height_rect,fig.OrientX,fig.OrientY,fig.angle);
+                    Rectangle(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY,fig.width_rect,fig.height_rect,fig.OrientX,fig.OrientY,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'oval':
-                    DrawEllipse(fig.firstPointX,fig.firstPointY,fig.a,fig.b,fig.angle);
+                    DrawEllipse(fig.firstPointX,fig.firstPointY,fig.a,fig.b,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'line':
-                    DDA(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY);
+                    DDA(fig.firstPointX,fig.firstPointY,fig.finalPointX,fig.finalPointY,fig.sinsel_size,fig.color);
                     break;
                 case 'pent':
-                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'hex':
-                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'diamond':
-                    draw_Rhombus(fig.firstPointX,fig.firstPointY,fig.width_rhombus,fig.angle);
+                    draw_Rhombus(fig.firstPointX,fig.firstPointY,fig.width_rhombus,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'triangle':
-                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle);
+                    draw_Polygon(fig.radius,fig.firstPointX,fig.firstPointY,fig.sides,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'trapezoid':
-                    drawTrapezoid(fig.firstPointX,fig.firstPointY,fig.topWidth,fig.bottomWidth,fig.heightTrapezoid,fig.angle);
+                    drawTrapezoid(fig.firstPointX,fig.firstPointY,fig.topWidth,fig.bottomWidth,fig.heightTrapezoid,fig.angle,fig.sinsel_size,fig.color);
                     break;
                 case 'text':
                     drawtext(fig.text_value,fig.firstPointX,fig.firstPointY);
@@ -1032,16 +1171,14 @@ document.addEventListener('DOMContentLoaded',function(){
         if (isDrawing){
             let radio=0,angle=0,OrientX,OrientY,width,height;
             switch (modo){
-                case "pencil":
-                    break;
                 case "circle":
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    circleBres(firstPointX,firstPointY,radio);
+                    circleBres(firstPointX,firstPointY,radio,sinsel_size,Color_line);
                     break;
                 case 'oval':
                     var a = Math.abs(finalPointX-firstPointX);
                     var b = Math.abs(finalPointY-firstPointY);
-                    DrawEllipse(firstPointX,firstPointY,a,b,0);
+                    DrawEllipse(firstPointX,firstPointY,a,b,0,sinsel_size,Color_line);
                     break;
                 case 'square':
                     let lengthX = Math.abs(finalPointX-firstPointX);
@@ -1049,42 +1186,42 @@ document.addEventListener('DOMContentLoaded',function(){
                     let length = Math.min(lengthX,lengthY);
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
-                    square(firstPointX,firstPointY,length,OrientX,OrientY);
+                    square(firstPointX,firstPointY,length,OrientX,OrientY,0,Color_line,sinsel_size);
                     break;
                 case 'rectangle':
                     width = Math.abs(finalPointX-firstPointX);
                     height = Math.abs(finalPointY-firstPointY);
                     OrientX = Math.sign(finalPointX-firstPointX);
                     OrientY = Math.sign(finalPointY-firstPointY);
-                    Rectangle(firstPointX,firstPointY,finalPointX,finalPointY,width,height,OrientX,OrientY);
+                    Rectangle(firstPointX,firstPointY,finalPointX,finalPointY,width,height,OrientX,OrientY,0,sinsel_size,Color_line);
                     break;
                 case "line":
-                    DDA(firstPointX,firstPointY,finalPointX,finalPointY);
+                    DDA(firstPointX,firstPointY,finalPointX,finalPointY,sinsel_size,Color_line);
                     break;
                 case 'pent':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    draw_Polygon(radio,firstPointX,firstPointY,5,angle);
+                    draw_Polygon(radio,firstPointX,firstPointY,5,angle,sinsel_size,Color_line);
                     break;
                 case 'hex':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    draw_Polygon(radio,firstPointX,firstPointY,6,angle);
+                    draw_Polygon(radio,firstPointX,firstPointY,6,angle,sinsel_size,Color_line);
                     break;
                 case 'diamond':
                     width = Math.abs(finalPointX-firstPointX);
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
-                    draw_Rhombus(firstPointX,firstPointY,width,0);
+                    draw_Rhombus(firstPointX,firstPointY,width,0,sinsel_size,Color_line);
                     break;
                 case 'trapezoid':
                     width = Math.abs(finalPointX-firstPointX);
                     height= Math.abs(finalPointY-firstPointY);
-                    drawTrapezoid(firstPointX,firstPointY,width/2,width,height,0)
+                    drawTrapezoid(firstPointX,firstPointY,width/2,width,height,0,sinsel_size,Color_line)
                     break;
                 case 'triangle':
                     angle = Math.atan2(finalPointY - firstPointY, finalPointX - firstPointX);
                     radio = Math.sqrt(Math.pow(finalPointX-firstPointX,2)+Math.pow(finalPointY-firstPointY,2));
-                    draw_Polygon(radio,firstPointX,firstPointY,3,angle);
+                    draw_Polygon(radio,firstPointX,firstPointY,3,angle,sinsel_size,Color_line);
                     break;
             }
         }
@@ -1109,7 +1246,7 @@ document.addEventListener('DOMContentLoaded',function(){
         hasInput = true;
     }
     function handleEnter(e) {
-        const keyCode = e.keyCode||e.which;
+        const keyCode = e.keyCode;
         if (keyCode === 13) {
             drawtext(this.value, firstPointX, firstPointY);
             figure.push({type:'text',firstPointX:firstPointX,firstPointY:firstPointY,text_value:this.value});

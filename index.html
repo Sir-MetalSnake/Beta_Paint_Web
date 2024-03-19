@@ -38,6 +38,7 @@
                         <button class="color green" value="green"></button>
                         <button class="color grey" value="grey"></button>
                         <button class="color blue" value="blue"></button>
+                        <input type="color" class="color picker" id="picker">
                     </div>
                 </div>
             </div>
@@ -130,8 +131,8 @@
             <span>Options</span>
             <div class="tools_sect">
                 <span>Size: </span>
-                <input type="range" min="1" max="100" id="range" value="1">
-                <span id="data">1</span>
+                <input type="range" min="5" max="100" id="range" value="5">
+                <span id="data">5</span>
             </div>
         </div>
         <button class="buttonOpen" id="openfile">Open File</button>
@@ -139,8 +140,14 @@
     <canvas id="canvas" class="whiteboard">
     </canvas>
     <div class="headpaint">
+        <div class="menu-figuras">
+
+        </div>
         <div class="menu-figs">
-            hi
+            <button class="post" value="atras"><img src="./img/fondo.png"></button>
+            <button class="post" value="adelante"><img src="./img/frente.png"></button>
+            <button class="post" value="fondo"><img src="./img/atras.png"></button>
+            <button class="post" value="frente"><img src="./img/adelante.png"></button>
         </div>
     </div>
 </div>
