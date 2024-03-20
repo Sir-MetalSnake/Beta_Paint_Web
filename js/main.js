@@ -393,6 +393,50 @@ document.addEventListener('DOMContentLoaded',function(){
     canvas.addEventListener('touchstart',function (e) {
         var touch = e.touches[0];
         var position = getPos(canvas,touch);
+        if (modo==='atras'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverHaciaAtras(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='adelante'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverHaciaAdelante(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='fondo'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverAlFondo(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
+        if (modo==='frente'){
+            let index = 0;
+            for (let fig of figure){
+                if (is_mouse_in_figure(position.x,position.y,fig)){
+                    let current_fig= figure[index];
+                    moverAlFrente(current_fig);
+                    return;
+                }
+                index++;
+            }
+        }
         if (modo==='eraser_pix'){
             let index = 0;
             for (let fig of figure){
